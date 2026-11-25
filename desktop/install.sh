@@ -11,11 +11,12 @@
 # Result: the Neuron's 2002 environment in /opt/neuron, its library (NeuronDB) in ~/neuron-run/data,
 # the engine starting at boot with the real panel on a USB-serial adapter, the dashboard at
 # http://<this computer>.local:8080/ and the on-screen panel at :8080/panel, plus a "Neuron" app icon.
-# Safe to run again: an existing NeuronDB (your saved sounds) is never overwritten.
+# Safe to run again: an existing NeuronDB (your saved sounds) is never overwritten, and the audio output and
+# buffer chosen earlier (dashboard, set-audio, set-buffer) are kept unless AUDIO_DEV is given.
 # The Neuron's software belongs to its makers: keep what this builds for your own instrument.
 set -euo pipefail
 [ "$(id -u)" = 0 ] && [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != root ] || { echo "run as: sudo bash $0 IMAGE"; exit 1; }
-SRC=${1:?usage: sudo bash install.sh IMAGE|keep [AUDIO_DEV]}; AUDIO=${2:-auto}
+SRC=${1:?usage: sudo bash install.sh IMAGE|keep [AUDIO_DEV]}; AUDIO=${2:-}
 if [ "$SRC" = keep ]; then KEEP=1; else KEEP=; SRC=$(realpath -e "$SRC"); fi
 USR=$SUDO_USER; UH=$(getent passwd "$USR" | cut -d: -f6); UID_=$(id -u "$USR")
 HERE=$(dirname "$(realpath "$0")"); REPO=$(dirname "$HERE"); O=/opt/neuron
@@ -70,7 +71,12 @@ fi
 
 say "Settings, engine helper, shims and launcher"
 mkdir -p /etc/neuron
-printf 'NEURON_USER=%s\nAUDIO_DEV=%s\n' "$USR" "$AUDIO" > /etc/neuron/neuron.conf; chmod 644 /etc/neuron/neuron.conf
+# Keep an earlier install's choices (set-audio / set-buffer, or the dashboard) unless AUDIO_DEV was given now.
+CF=/etc/neuron/neuron.conf; old(){ [ -f $CF ] || return 0; sed -n "s/^$1=\\([A-Za-z0-9:=,_-]*\\)$/\\1/p" $CF | tail -1; }
+[ -n "$AUDIO" ] || AUDIO=$(old AUDIO_DEV); [ -n "$AUDIO" ] || AUDIO=auto
+BUF=$(old AUDIO_BUFFER_MS); [[ $BUF =~ ^[0-9]{1,2}$ ]] && [ "$BUF" -ge 2 ] && [ "$BUF" -le 40 ] || BUF=5
+T=$(mktemp /etc/neuron/.conf.XXXXXX)
+printf 'NEURON_USER=%s\nAUDIO_DEV=%s\nAUDIO_BUFFER_MS=%s\n' "$USR" "$AUDIO" "$BUF" > "$T"; chmod 644 "$T"; mv "$T" $CF
 bash "$HERE/update-engine.sh"
 unmount_chroot
 chown -R root:root $O; chmod -R go-w $O

@@ -16,7 +16,8 @@ sudo bash ~/neuron/desktop/install.sh ~/Downloads/Neuron80GB-OS15.rar
 - Unpacking needs about 10 GB free. On a small disk: `sudo NEURON_WORK=/some/other/disk bash ~/neuron/desktop/install.sh …`
 - An optional second argument names the ALSA device (e.g. `plughw:M4`); the default is the first USB audio
   interface that can play.
-- Safe to run again: an existing NeuronDB (your saved sounds) is never overwritten.
+- Safe to run again: an existing NeuronDB (your saved sounds) is never overwritten, and the audio output and
+  buffer you chose earlier are kept (unless you name a device again).
 
 Then reboot. The first start asks for your Neuron's serial number on the panel's keypad (it's on the bottom of the case).
 
