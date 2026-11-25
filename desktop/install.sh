@@ -1,5 +1,6 @@
 #!/bin/bash
-# Install the Neuron on an Ubuntu 24.04 LTS computer, for the user who runs it with sudo.
+# Install the Neuron on an Ubuntu 26.04 LTS computer (tested from scratch on 26.04.1; 24.04 only in a container),
+# for the user who runs it with sudo.
 #   sudo bash ~/neuron/desktop/install.sh IMAGE [AUDIO_DEV]
 # IMAGE      the Neuron disk image: Neuron80GB-OS15.rar, the .tib inside it, or a folder holding
 #            p1.img and p5.img from tools/build_disk.py; or  keep  to reuse an existing /opt/neuron/chroot
