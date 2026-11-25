@@ -1,0 +1,8 @@
+[Unit]
+Description=Neuron panel relay and web panel (port 8080)
+
+[Service]
+EnvironmentFile=-/run/neuron/relay.env
+ExecStart=/usr/bin/python3 /opt/neuron/relay.py
+Restart=always
+RestartSec=1

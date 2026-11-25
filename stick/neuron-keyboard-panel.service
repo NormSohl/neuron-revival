@@ -1,0 +1,15 @@
+[Unit]
+Description=Neuron keyboard panel (PC keyboard and screen as the Neuron's panel)
+Conflicts=getty@tty1.service neuron-kiosk.service
+After=getty@tty1.service
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/neuron/keyboard-panel.py
+StandardInput=tty
+StandardOutput=tty
+StandardError=journal
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+Restart=always
+RestartSec=1

@@ -1,0 +1,59 @@
+#!/bin/bash
+# Root side of the Neuron desktop launcher (ThinkPad Twist / any Ubuntu desktop).
+# Installed root-owned as /usr/local/sbin/neuron-engine; sudoers lets the desktop user run it without
+# a password, so it only ever starts or stops the original engine, in PERF mode (never DEDICATED).
+# Sound goes straight to the USB audio interface through ALSA, never through PipeWire: it is the Neuron's alone.
+#   neuron-engine start PTY    start the engine as the transient unit neuron-engine; PTY = relay's /dev/pts/N
+#   neuron-engine stop | status
+#   neuron-engine set-audio auto|plughw:CARD=<id>,DEV=0   choose the sound output (takes effect at next start)
+#   neuron-engine set-buffer MS   output buffer in ms, 2-40 (default 5; takes effect at next start)
+set -euo pipefail
+O=/opt/neuron; C=$O/chroot
+# /etc/neuron/neuron.conf (written by install.sh, root-owned): NEURON_USER, and AUDIO_DEV = an ALSA device
+# such as plughw:M4, or auto = the first USB audio interface that can play (a webcam's mic can't).
+NEURON_USER=; AUDIO_DEV=auto; AUDIO_BUFFER_MS=5; CF=/etc/neuron/neuron.conf
+if [ -f $CF ] && [ "$(stat -c %u:%a $CF)" = 0:644 ]; then . $CF; fi
+[[ $AUDIO_BUFFER_MS =~ ^[0-9]{1,2}$ ]] && [ "$AUDIO_BUFFER_MS" -ge 2 ] && [ "$AUDIO_BUFFER_MS" -le 40 ] || AUDIO_BUFFER_MS=5
+save_conf(){ mkdir -p /etc/neuron; local T; T=$(mktemp /etc/neuron/.conf.XXXXXX)
+  printf 'NEURON_USER=%s\nAUDIO_DEV=%s\nAUDIO_BUFFER_MS=%s\n' "$USR" "$AUDIO_DEV" "$AUDIO_BUFFER_MS" > "$T"; chmod 644 "$T"; mv "$T" $CF; }
+[ -n "$NEURON_USER" ] || { echo "no NEURON_USER in $CF: run desktop/install.sh first"; exit 1; }
+USR=$NEURON_USER; UNUM=$(id -u "$USR")
+DATA=/home/$USR/neuron-run/data/neuron           # NeuronDB lives here (owned by the user)
+check_pty(){ P=$(realpath -e -- "${1:-}" 2>/dev/null) || { echo "no such panel pty"; exit 1; }
+  [[ $P =~ ^/dev/pts/[0-9]+$ ]] || { echo "panel must be a /dev/pts pty"; exit 1; }
+  [ "$(stat -c %u "$P")" = "$UNUM" ] || { echo "panel pty is not $USR's"; exit 1; }; }
+case "${1:-}" in
+start)
+  check_pty "${2:-}"
+  systemctl is-active -q neuron-engine && { echo "engine already running"; exit 0; }
+  systemctl reset-failed neuron-engine 2>/dev/null || true
+  exec systemd-run -q --unit=neuron-engine --collect -p KillMode=control-group "$0" run "$P" ;;
+run)
+  [ -n "${INVOCATION_ID:-}" ] || { echo "use: neuron-engine start PTY"; exit 1; }
+  check_pty "${2:-}"
+  D=$(realpath -e -- "$DATA"); [[ $D == /home/$USR/* && ! -L $DATA && -d $D ]] || { echo "bad NeuronDB folder"; exit 1; }
+  mountpoint -q $C/home/neuron || mount --bind "$D" $C/home/neuron
+  export DEDICATED=0 PERF=1 ENGINE=neuron
+  # straight to the USB audio interface at 44.1 kHz (no resampling, no PipeWire): AUDIO_BUFFER_MS buffer
+  # (set-buffer; default 5) in 1 ms periods.
+  # The player runs real-time (FIFO 10, above the engine's own threads at 1-2): at normal priority with a
+  # 3 ms buffer it underran about 14 times a minute on the Twist (2026-11-24).
+  DEV=$AUDIO_DEV
+  if [ "$DEV" = auto ]; then for d in /proc/asound/card[0-9]*; do [ -e "$d/usbid" ] && ls -d "$d"/pcm*p >/dev/null 2>&1 && { DEV=plughw:CARD=$(cat "$d/id"),DEV=0; break; }; done; fi
+  [ "$DEV" = auto ] && { echo "no USB audio interface found (aplay -l)"; exit 1; }
+  exec $O/launcher/run_neuron.sh $C "$P" \
+    chrt -f 10 aplay -q -D "$DEV" -t raw -f S32_LE -c 2 -r 44100 --buffer-time=$((AUDIO_BUFFER_MS*1000)) --period-time=1000 ;;
+stop)   systemctl stop neuron-engine 2>/dev/null || true ;;
+status) systemctl status --no-pager neuron-engine ;;
+set-audio)
+  V=${2:-}
+  if [ "$V" != auto ]; then
+    [[ $V =~ ^plughw:CARD=([A-Za-z0-9_]{1,32}),DEV=0$ ]] && [ -e "/proc/asound/${BASH_REMATCH[1]}" ] \
+      || { echo "no such sound card: $V"; exit 1; }
+  fi
+  AUDIO_DEV=$V; save_conf; echo "audio output: $V" ;;
+set-buffer)
+  V=${2:-}; [[ $V =~ ^[0-9]{1,2}$ ]] && [ "$V" -ge 2 ] && [ "$V" -le 40 ] || { echo "buffer must be 2-40 ms"; exit 1; }
+  AUDIO_BUFFER_MS=$V; save_conf; echo "audio buffer: $V ms (restart the Neuron to use it)" ;;
+*) echo "usage: neuron-engine start PTY | stop | status | set-audio DEV | set-buffer MS"; exit 1 ;;
+esac

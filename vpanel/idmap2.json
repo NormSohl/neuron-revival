@@ -1,0 +1,1087 @@
+[
+ {
+  "id": "0xb",
+  "lcd": "|Sound          1| |Myst            |",
+  "changed": {
+   "0x44": 4,
+   "0x3": 1,
+   "0x4": 0,
+   "0x9b": 52,
+   "0x9c": 56,
+   "0x9d": 83,
+   "0x9e": 109,
+   "0x9f": 97,
+   "0xa0": 108,
+   "0xa1": 108,
+   "0xa2": 66,
+   "0xa3": 100,
+   "0xa4": 121,
+   "0xb1": 54,
+   "0xb2": 55,
+   "0xb3": 83,
+   "0xb4": 116,
+   "0xb5": 97,
+   "0xb6": 116,
+   "0xb7": 110,
+   "0xb8": 97,
+   "0xb9": 114,
+   "0xba": 121,
+   "0xa5": 48,
+   "0xa6": 54,
+   "0xa7": 48,
+   "0xa8": 78,
+   "0xa9": 97,
+   "0xaa": 116,
+   "0xab": 117,
+   "0xac": 114,
+   "0xad": 97,
+   "0xae": 108,
+   "0xbc": 55,
+   "0xbd": 57,
+   "0xbe": 76,
+   "0xbf": 97,
+   "0xc0": 114,
+   "0xc1": 103,
+   "0xc2": 101,
+   "0xc3": 66,
+   "0xc4": 100,
+   "0xc5": 121,
+   "0x16": 0,
+   "0xc7": 48,
+   "0xc8": 48,
+   "0xc9": 83,
+   "0xca": 109,
+   "0xcb": 97,
+   "0xcc": 108,
+   "0xcd": 108,
+   "0xce": 66,
+   "0xcf": 100,
+   "0xd0": 121,
+   "0xdf": 83,
+   "0xe0": 116,
+   "0xe1": 114,
+   "0xe2": 105,
+   "0xe3": 110,
+   "0xe4": 103,
+   "0xe5": 101,
+   "0xe6": 100,
+   "0xd4": 78,
+   "0xd5": 97,
+   "0xd6": 116,
+   "0xd7": 117,
+   "0xd8": 114,
+   "0xd9": 97,
+   "0xda": 108,
+   "0xdb": 32,
+   "0xe7": 49,
+   "0xe8": 50,
+   "0xe9": 55,
+   "0xea": 76,
+   "0xeb": 97,
+   "0xec": 114,
+   "0xed": 103,
+   "0xee": 101,
+   "0xef": 66,
+   "0xf0": 100,
+   "0xf1": 121,
+   "0x35": 1,
+   "0x6f": 54,
+   "0x70": 49,
+   "0x84": 48,
+   "0x85": 55,
+   "0x86": 49,
+   "0x79": 48,
+   "0x7a": 55,
+   "0x7b": 49,
+   "0x90": 54,
+   "0x91": 49
+  }
+ },
+ {
+  "id": "0xc",
+  "lcd": "|10's Hold       | |              On|",
+  "changed": {
+   "0x27": 1
+  }
+ },
+ {
+  "id": "0xd",
+  "lcd": "|Save as        ?| |Symbiont        |",
+  "changed": {
+   "0x26": 1
+  }
+ },
+ {
+  "id": "0xe",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x10",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x11",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x12",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x13",
+  "lcd": "|Silver          | |Switch       Off|",
+  "changed": {
+   "0x21": 0
+  }
+ },
+ {
+  "id": "0x14",
+  "lcd": "|Silver          | |Level     FreqFX|",
+  "changed": {
+   "0x2d": 0,
+   "0x2e": 1,
+   "0x2b": 0,
+   "0x6f": 48,
+   "0x70": 48,
+   "0x72": 32,
+   "0x73": 79,
+   "0x74": 102,
+   "0x75": 102,
+   "0x76": 32,
+   "0x77": 32,
+   "0x84": 48,
+   "0x87": 32,
+   "0x88": 32,
+   "0x89": 79,
+   "0x8a": 102,
+   "0x8b": 102,
+   "0x8c": 32,
+   "0x8d": 32,
+   "0x8e": 32,
+   "0x79": 48,
+   "0x7c": 32,
+   "0x7d": 32,
+   "0x7e": 79,
+   "0x7f": 102,
+   "0x80": 102,
+   "0x81": 32,
+   "0x82": 32,
+   "0x83": 32,
+   "0x90": 48,
+   "0x91": 48,
+   "0x93": 32,
+   "0x94": 79,
+   "0x95": 102,
+   "0x96": 102,
+   "0x97": 32,
+   "0x98": 32
+  }
+ },
+ {
+  "id": "0x15",
+  "lcd": "|Silver Filter   | |Type      24dbLP|",
+  "changed": {}
+ },
+ {
+  "id": "0x16",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x17",
+  "lcd": "|Silver Filter   | |Type      12dbLP|",
+  "changed": {
+   "0x37": 1,
+   "0x36": 0
+  }
+ },
+ {
+  "id": "0x18",
+  "lcd": "|Silver FreqFX   | |Switch        On|",
+  "changed": {
+   "0x35": 1
+  }
+ },
+ {
+  "id": "0x19",
+  "lcd": "|Silver TimeFX   | |Switch       Off|",
+  "changed": {
+   "0x34": 0
+  }
+ },
+ {
+  "id": "0x1a",
+  "lcd": "|Silver Filter   | |Cutoff        46|",
+  "changed": {
+   "0x2b": 0,
+   "0x2a": 2
+  }
+ },
+ {
+  "id": "0x1c",
+  "lcd": "|Master FX Delay | |Switch       Off|",
+  "changed": {
+   "0x32": 0
+  }
+ },
+ {
+  "id": "0x1d",
+  "lcd": "|Master FX Delay | |L Time         0|",
+  "changed": {}
+ },
+ {
+  "id": "0x1e",
+  "lcd": "|Master FX Reverb| |Switch       Off|",
+  "changed": {
+   "0x31": 0
+  }
+ },
+ {
+  "id": "0x1f",
+  "lcd": "|Master FX Delay | |Mix           59|",
+  "changed": {}
+ },
+ {
+  "id": "0x20",
+  "lcd": "|SetUp          0| |InitSetUp       |",
+  "changed": {
+   "0x33": 0,
+   "0x32": 0,
+   "0x31": 0,
+   "0x3f": 1,
+   "0x25": 2
+  }
+ },
+ {
+  "id": "0x21",
+  "lcd": "|Pitch Bend      | |Range (semi)   2|",
+  "changed": {
+   "0x3e": 1
+  }
+ },
+ {
+  "id": "0x22",
+  "lcd": "|CopyFromSnd    0| |Symbiont        |",
+  "changed": {
+   "0x3d": 1
+  }
+ },
+ {
+  "id": "0x23",
+  "lcd": "|Load FTP        | |Software        |",
+  "changed": {
+   "0x3c": 1
+  }
+ },
+ {
+  "id": "0x24",
+  "lcd": "|Basic Settings  | |Master Tune  440|",
+  "changed": {
+   "0x3b": 1
+  }
+ },
+ {
+  "id": "0x25",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x26",
+  "lcd": "|Shaper 3        | |Status   MFX Mix|",
+  "changed": {
+   "0x4c": 2,
+   "0x46": 0,
+   "0x4d": 0,
+   "0x39": 1,
+   "0x38": 0
+  }
+ },
+ {
+  "id": "0x27",
+  "lcd": "|LFO             | |Switch       Off|",
+  "changed": {
+   "0x7": 0
+  }
+ },
+ {
+  "id": "0x28",
+  "lcd": "|Resynator 1     | |Switch       Off|",
+  "changed": {
+   "0x6": 0
+  }
+ },
+ {
+  "id": "0x29",
+  "lcd": "|Resynator 1     | |Param Level    3|",
+  "changed": {
+   "0x4": 0,
+   "0x5": 1,
+   "0xc": 0,
+   "0x9b": 54,
+   "0x9c": 53,
+   "0x9d": 67,
+   "0x9f": 114,
+   "0xa0": 112,
+   "0xa1": 73,
+   "0xa2": 110,
+   "0xa3": 116,
+   "0xa4": 110,
+   "0xb2": 48,
+   "0xb3": 83,
+   "0xb4": 105,
+   "0xb5": 109,
+   "0xb6": 112,
+   "0xb7": 108,
+   "0xb8": 101,
+   "0xb9": 77,
+   "0xba": 100,
+   "0xa7": 55,
+   "0xa8": 67,
+   "0xaa": 109,
+   "0xab": 112,
+   "0xac": 108,
+   "0xad": 120,
+   "0xae": 77,
+   "0xaf": 100,
+   "0xbc": 54,
+   "0xbd": 50,
+   "0xbe": 67,
+   "0xc0": 114,
+   "0xc1": 112,
+   "0xc2": 73,
+   "0xc3": 110,
+   "0xc4": 116,
+   "0xc5": 110
+  }
+ },
+ {
+  "id": "0x2a",
+  "lcd": "|R1 Load Model   | |336 synthbase4  |",
+  "changed": {}
+ },
+ {
+  "id": "0x2b",
+  "lcd": "|R1 Pitch        | |Octave        +1|",
+  "changed": {
+   "0x2": 1,
+   "0x1": 0
+  }
+ },
+ {
+  "id": "0x2c",
+  "lcd": "|Resynator 1     | |Type       Scape|",
+  "changed": {
+   "0xe": 0,
+   "0xd": 1,
+   "0xc": 0,
+   "0x9b": 48,
+   "0x9c": 48,
+   "0x9d": 87,
+   "0x9e": 97,
+   "0x9f": 114,
+   "0xa0": 109,
+   "0xa1": 32,
+   "0xa2": 32,
+   "0xa3": 32,
+   "0xa4": 32,
+   "0xb2": 48,
+   "0xb3": 80,
+   "0xb4": 108,
+   "0xb5": 97,
+   "0xb6": 110,
+   "0xb7": 97,
+   "0xb8": 114,
+   "0xb9": 32,
+   "0xba": 32,
+   "0xa7": 55,
+   "0xa8": 84,
+   "0xa9": 117,
+   "0xaa": 98,
+   "0xab": 117,
+   "0xac": 108,
+   "0xad": 97,
+   "0xae": 114,
+   "0xbb": 49,
+   "0xbc": 50,
+   "0xbd": 55,
+   "0xbe": 67,
+   "0xc0": 108,
+   "0xc1": 100,
+   "0xc2": 32,
+   "0xc3": 32,
+   "0xc4": 32
+  }
+ },
+ {
+  "id": "0x2d",
+  "lcd": "|Blender Type    | |Mix Singlesphere|",
+  "changed": {}
+ },
+ {
+  "id": "0x2e",
+  "lcd": "|Shaper 1/2      | |Status      Free|",
+  "changed": {
+   "0x41": 0,
+   "0x48": 0,
+   "0x43": 0,
+   "0x4a": 0,
+   "0x9": 1,
+   "0x8": 0
+  }
+ },
+ {
+  "id": "0x2f",
+  "lcd": "|Resynator 2     | |Switch       Off|",
+  "changed": {
+   "0x16": 0
+  }
+ },
+ {
+  "id": "0x30",
+  "lcd": "|Resynator 2     | |Param Level    2|",
+  "changed": {
+   "0x13": 0,
+   "0x14": 1,
+   "0xc7": 48,
+   "0xc8": 48,
+   "0xc9": 72,
+   "0xca": 105,
+   "0xcb": 77,
+   "0xcc": 111,
+   "0xcd": 118,
+   "0xce": 109,
+   "0xcf": 110,
+   "0xd0": 116,
+   "0xdf": 72,
+   "0xe0": 105,
+   "0xe1": 83,
+   "0xe2": 111,
+   "0xe3": 102,
+   "0xe5": 110,
+   "0xe6": 115,
+   "0xd4": 76,
+   "0xd5": 111,
+   "0xd6": 83,
+   "0xd7": 111,
+   "0xd8": 102,
+   "0xda": 110,
+   "0xdb": 115,
+   "0xe7": 49,
+   "0xe8": 50,
+   "0xe9": 55,
+   "0xea": 76,
+   "0xeb": 111,
+   "0xec": 77,
+   "0xed": 111,
+   "0xee": 118,
+   "0xef": 109,
+   "0xf0": 110,
+   "0xf1": 116
+  }
+ },
+ {
+  "id": "0x31",
+  "lcd": "|R2 Load Model   | |264 Indigo^2    |",
+  "changed": {}
+ },
+ {
+  "id": "0x32",
+  "lcd": "|R2 Pitch        | |Octave        +1|",
+  "changed": {
+   "0x1f": 1,
+   "0x1e": 0
+  }
+ },
+ {
+  "id": "0x33",
+  "lcd": "|Resynator 2     | |Type       Scape|",
+  "changed": {
+   "0x1b": 0,
+   "0x1a": 1,
+   "0xc6": 49,
+   "0xc7": 50,
+   "0xc8": 55,
+   "0xc9": 66,
+   "0xca": 111,
+   "0xcb": 100,
+   "0xcc": 121,
+   "0xcd": 65,
+   "0xce": 109,
+   "0xcf": 110,
+   "0xd0": 116,
+   "0xdf": 66,
+   "0xe0": 111,
+   "0xe1": 100,
+   "0xe2": 121,
+   "0xe3": 84,
+   "0xe4": 111,
+   "0xe5": 110,
+   "0xe6": 101,
+   "0xd4": 66,
+   "0xd5": 111,
+   "0xd6": 100,
+   "0xd7": 121,
+   "0xd8": 84,
+   "0xd9": 111,
+   "0xda": 110,
+   "0xdb": 101,
+   "0xe8": 48,
+   "0xe9": 48,
+   "0xea": 66,
+   "0xeb": 111,
+   "0xec": 100,
+   "0xed": 121,
+   "0xee": 65,
+   "0xef": 109,
+   "0xf0": 110,
+   "0xf1": 116
+  }
+ },
+ {
+  "id": "0x34",
+  "lcd": "|Slicer          | |Type         OFF|",
+  "changed": {
+   "0x19": 0
+  }
+ },
+ {
+  "id": "0x35",
+  "lcd": "|Playing Original| |No Snapshots    |",
+  "changed": {
+   "0x20": 1
+  }
+ },
+ {
+  "id": "0x36",
+  "lcd": "|Resynator 1     | |L2ContSph StkAnm|",
+  "changed": {
+   "0xc": 0,
+   "0xb": 1
+  }
+ },
+ {
+  "id": "0x37",
+  "lcd": "|R1 Param Value  | |L2 Mode1Low   71|",
+  "changed": {
+   "0xc": 0,
+   "0xa": 2
+  }
+ },
+ {
+  "id": "0x38",
+  "lcd": "|Resynator 2     | |L1ContSph Shaper|",
+  "changed": {
+   "0x12": 1
+  }
+ },
+ {
+  "id": "0x39",
+  "lcd": "|R2 Param Value  | |L1 CrpSmall   96|",
+  "changed": {
+   "0x10": 2
+  }
+ },
+ {
+  "id": "0x3a",
+  "lcd": "|Silver Filter   | |Contour   StkAnm|",
+  "changed": {
+   "0x2b": 0,
+   "0x2c": 1
+  }
+ },
+ {
+  "id": "0x3b",
+  "lcd": "|Shaper 3        | |Env Attack    65|",
+  "changed": {}
+ },
+ {
+  "id": "0x3c",
+  "lcd": "|Shaper 3        | |Env Decay     75|",
+  "changed": {}
+ },
+ {
+  "id": "0x3d",
+  "lcd": "|Shaper 3        | |Env Sustn     79|",
+  "changed": {}
+ },
+ {
+  "id": "0x3e",
+  "lcd": "|Shaper 3        | |Env Release   77|",
+  "changed": {}
+ },
+ {
+  "id": "0x3f",
+  "lcd": "|Shaper 3        | |Env Depth     27|",
+  "changed": {}
+ },
+ {
+  "id": "0x40",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x41",
+  "lcd": "|Shaper 1 Amp    | |Attack         0|",
+  "changed": {}
+ },
+ {
+  "id": "0x42",
+  "lcd": "|Shaper 1 Amp    | |Decay          0|",
+  "changed": {}
+ },
+ {
+  "id": "0x43",
+  "lcd": "|Shaper 1 Amp    | |Sustain      126|",
+  "changed": {}
+ },
+ {
+  "id": "0x44",
+  "lcd": "|Shaper 1 Amp    | |Release       60|",
+  "changed": {}
+ },
+ {
+  "id": "0x45",
+  "lcd": "|Blender         | |Amount        35|",
+  "changed": {}
+ },
+ {
+  "id": "0x46",
+  "lcd": "|LFO             | |Depth          0|",
+  "changed": {}
+ },
+ {
+  "id": "0x47",
+  "lcd": "|Shaper 2 Amp    | |Attack         0|",
+  "changed": {}
+ },
+ {
+  "id": "0x48",
+  "lcd": "|[051]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x49",
+  "lcd": "|Shaper 2 Amp    | |Decay          0|",
+  "changed": {}
+ },
+ {
+  "id": "0x4a",
+  "lcd": "|Shaper 2 Amp    | |Sustain      126|",
+  "changed": {}
+ },
+ {
+  "id": "0x4b",
+  "lcd": "|Shaper 2 Amp    | |Release       59|",
+  "changed": {}
+ },
+ {
+  "id": "0x4c",
+  "lcd": "|[000]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x4d",
+  "lcd": "|Resynator 1     | |Volume        95|",
+  "changed": {}
+ },
+ {
+  "id": "0x4e",
+  "lcd": "|Resynator 2     | |Volume        97|",
+  "changed": {}
+ },
+ {
+  "id": "0x4f",
+  "lcd": "|Slicer          | |Depth/Spread  25|",
+  "changed": {}
+ },
+ {
+  "id": "0x50",
+  "lcd": "|Slicer          | |Rate         1.7|",
+  "changed": {}
+ },
+ {
+  "id": "0x51",
+  "lcd": "|[000]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xb7",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xb8",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xb9",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xba",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xbb",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xbc",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xbd",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xbe",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xbf",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc0",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc1",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc2",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc3",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc4",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc5",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc6",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc7",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc8",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xc9",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xca",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xcb",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xcc",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xcd",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xce",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xcf",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd0",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd1",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd2",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd3",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd4",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd5",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd6",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd7",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd8",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xd9",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xda",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xdb",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xdc",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xdd",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xde",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xdf",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe0",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe1",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe2",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe3",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe4",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe5",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe6",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe7",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe8",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xe9",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xea",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xeb",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xec",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xed",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xee",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xef",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf0",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf1",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf2",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf3",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf4",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf5",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf6",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf7",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf8",
+  "lcd": "|Sound          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0xf9",
+  "lcd": "|Switch Off?     | |                |",
+  "changed": {}
+ },
+ {
+  "id": "0x48",
+  "val": 1,
+  "lcd": "|[054]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x48",
+  "val": 0,
+  "lcd": "|[048]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x4c",
+  "val": 1,
+  "lcd": "|[003]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x4c",
+  "val": 0,
+  "lcd": "|[000]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x51",
+  "val": 1,
+  "lcd": "|[003]          0| |Symbiont        |",
+  "changed": {}
+ },
+ {
+  "id": "0x51",
+  "val": 0,
+  "lcd": "|[000]          0| |Symbiont        |",
+  "changed": {}
+ }
+]

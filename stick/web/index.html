@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Neuron panel</title>
+<style>
+  :root { --bg:#16181b; --panel:#2a2d31; --sect:#33373c; --line:#4a4f56; --text:#c9cdd2; --dim:#7d848c;
+          --amber:#ffb238; --amberdim:#5a4320; --green:#7dff9a; --greenbg:#0f2414; --red:#d84a3a; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text);
+               font:13px/1.2 "DejaVu Sans", system-ui, sans-serif; overflow:hidden; user-select:none;
+               -webkit-user-select:none; touch-action:none; -webkit-touch-callout:none;
+               -webkit-text-size-adjust:100%; overscroll-behavior:none; }
+  #stage { position:absolute; left:0; top:0; width:1600px; height:980px; transform-origin:0 0; }
+  .sect { position:absolute; background:var(--sect); border:1px solid var(--line); border-radius:10px; }
+  .sect > .title { position:absolute; left:10px; top:6px; font-size:11px; letter-spacing:.08em;
+                   text-transform:uppercase; color:var(--dim); }
+  .ctl { position:absolute; display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .lab { font-size:10px; color:var(--dim); text-align:center; white-space:nowrap; }
+  .btn { width:40px; height:22px; border-radius:4px; background:#1d2023; border:1px solid #555b62;
+         cursor:pointer; position:relative; }
+  .btn.red { background:#5a1f19; border-color:var(--red); }
+  .btn:active, .btn.down { background:#3b4046; }
+  .led { width:8px; height:8px; border-radius:50%; background:var(--amberdim); box-shadow:none; }
+  .led.on { background:var(--amber); box-shadow:0 0 6px var(--amber); }
+  .led.blink { animation:blink .6s steps(2) infinite; }
+  @keyframes blink { 0% { background:var(--amber); box-shadow:0 0 6px var(--amber);} 100% { background:var(--amberdim); box-shadow:none; } }
+  .leds { display:flex; gap:4px; height:8px; }
+  .disp { position:absolute; background:var(--greenbg); color:var(--green); border-radius:4px;
+          font:13px/1 "DejaVu Sans Mono", monospace; padding:5px 5px; white-space:pre; letter-spacing:.02em;
+          text-shadow:0 0 4px rgba(125,255,154,.5); border:1px solid #234a2c; }
+  .lcd .hl { background:var(--green); color:#0d1c10; }
+  .lcd { position:absolute; background:#0d1c10; color:var(--green); border-radius:6px; border:2px solid #234a2c;
+         font:26px/1.15 "DejaVu Sans Mono", monospace; padding:10px 14px; white-space:pre;
+         text-shadow:0 0 6px rgba(125,255,154,.6); }
+  .stick { position:absolute; border-radius:50%; background:radial-gradient(circle,#3a3f45,#24272b);
+           border:1px solid #5a6068; cursor:crosshair; touch-action:none; }
+  .stick .knobcap { position:absolute; width:34px; height:34px; margin:-17px 0 0 -17px; border-radius:50%;
+           background:radial-gradient(circle at 35% 35%, #ffc46b, #ff8a1a 60%, #b85500); box-shadow:0 0 12px #ff8a1a88;
+           pointer-events:none; }
+  .stick.ctrl .knobcap { background:radial-gradient(circle at 35% 35%, #ff7b6b, #c8261a 60%, #7a120b); box-shadow:0 0 10px #c8261a88; }
+  .wheel { width:34px; height:96px; border-radius:6px; cursor:ns-resize; touch-action:none; position:relative; overflow:hidden;
+           background:linear-gradient(90deg,#3a2a10,#ffb238 50%,#3a2a10); border:1px solid #6b5228; }
+  .wheel.big { width:44px; height:112px; }
+  .wheel .shade { position:absolute; inset:0; display:flex; flex-direction:column-reverse; pointer-events:none; z-index:1; }
+  .wheel .shade .cell { flex:1; background:rgba(8,10,14,0.78); transition:background .08s; }
+  .wheel .shade .cell.lit { background:transparent; }
+  .wheel .ridges { position:absolute; left:0; right:0; top:-20px; bottom:-20px; pointer-events:none;
+           background:repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 2px, transparent 2px 10px); }
+  .knob { width:42px; height:42px; border-radius:50%; cursor:ns-resize; touch-action:none; position:relative;
+          background:radial-gradient(circle at 40% 35%, #555b62, #1b1d20 70%); border:1px solid #60666e; }
+  .knob .mark { position:absolute; left:50%; top:4px; width:3px; height:12px; margin-left:-1.5px; background:#ddd;
+                border-radius:2px; transform-origin:50% 17px; pointer-events:none; }
+  .knob.big { width:58px; height:58px; } .knob.big .mark { transform-origin:50% 25px; height:16px; }
+  #keys { position:absolute; left:250px; top:752px; width:1330px; height:210px; touch-action:none; }
+  .wk { position:absolute; top:0; height:210px; background:#eceae4; border:1px solid #888; border-radius:0 0 5px 5px;
+        box-sizing:border-box; }
+  .bk { position:absolute; top:0; height:128px; background:#1a1a1a; border:1px solid #000; border-radius:0 0 4px 4px;
+        z-index:2; box-sizing:border-box; }
+  .wk.on { background:#ffd27a; } .bk.on { background:#b8862a; }
+  #status { position:absolute; left:250px; top:964px; font-size:11px; color:var(--dim); }
+  .seg { display:flex; gap:4px; } .seg .btn { width:auto; padding:0 6px; height:20px; font-size:10px; color:var(--text);
+         display:flex; align-items:center; } .seg .btn.sel { border-color:var(--amber); color:var(--amber); }
+  .kp { display:grid; grid-template-columns:repeat(3,38px); gap:6px; }
+  .kp .btn { width:38px; height:26px; color:var(--text); font-size:12px; display:flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+'use strict';
+// ------------------------------------------------------------------ connection
+let ws = null, regs = new Array(256).fill(0), G = {};
+const out = [];
+function send(id, v) { out.push([id, v]); flush(); }
+function flush() { if (ws && ws.readyState === 1 && out.length) { ws.send(JSON.stringify({m: out.splice(0)})); } }
+function connect() {
+  ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+  ws.onopen = () => setStatus('connected');
+  ws.onclose = () => { setStatus('reconnecting…'); setTimeout(connect, 1000); };
+  ws.onmessage = ev => {
+    const d = JSON.parse(ev.data);
+    if (d.all) { regs = d.all; G = d.globals || {}; renderAll(); }
+    if (d.r) { for (const [r, v] of d.r) { regs[r] = v; } renderAll(); }
+  };
+}
+function setStatus(s) { document.getElementById('status').textContent = 'Neuron web panel – ' + s +
+  '   ·   keys Z S X D C V… / Q 2 W 3 E… play,  - = octave,  F5/F6 velocity,  Home sound page,  PgUp/PgDn data (next/previous sound),  arrows + Enter menu,  [ ] volume'; }
+
+// ------------------------------------------------------------------ building blocks
+const stage = document.getElementById('stage');
+function el(tag, cls, parent, style) { const e = document.createElement(tag); if (cls) e.className = cls;
+  if (style) Object.assign(e.style, style); (parent || stage).appendChild(e); return e; }
+function sect(title, x, y, w, h) { const s = el('div', 'sect', stage, {left: x+'px', top: y+'px', width: w+'px', height: h+'px'});
+  el('div', 'title', s).textContent = title; return s; }
+function at(parent, x, y) { return el('div', 'ctl', parent, {left: x+'px', top: y+'px'}); }
+const ledEls = [];   // [element, reg]
+function leds(parent, regsList) { const row = el('div', 'leds', parent);
+  for (const r of regsList) { const l = el('div', 'led', row); ledEls.push([l, r]); } return row; }
+// press-and-release button; ledList: registers of its LEDs
+function button(parent, x, y, id, label, ledList = [], opts = {}) {
+  const c = at(parent, x, y); if (ledList.length) leds(c, ledList);
+  const b = el('div', 'btn' + (opts.red ? ' red' : ''), c);
+  if (opts.text) { b.textContent = opts.text; Object.assign(b.style, {display:'flex', alignItems:'center', justifyContent:'center', fontSize:'11px', color:'#ccc'}); }
+  if (label) el('div', 'lab', c).textContent = label;
+  const v = opts.value || 1;
+  if (opts.tap) {   // a quick press-and-release, however long the finger stays down
+    b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.add('down'); send(id, v); setTimeout(() => send(id, 0), 60); });
+    const off = () => b.classList.remove('down');
+    b.addEventListener('pointerup', off); b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
+    return b;
+  }
+  b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.add('down'); send(id, v); });
+  const up = () => { if (b.classList.contains('down')) { b.classList.remove('down'); send(id, 0); } };
+  b.addEventListener('pointerup', up); b.addEventListener('pointerleave', up); b.addEventListener('pointercancel', up);
+  return b;
+}
+// endless control (wheel or knob): one message per step, value 1 = up, 0 = down
+function endless(elm, id, pxPerStep, onStep) {
+  let lastY = null, acc = 0;
+  elm.addEventListener('pointerdown', e => { e.preventDefault(); elm.setPointerCapture(e.pointerId); lastY = e.clientY; acc = 0; });
+  elm.addEventListener('pointermove', e => { if (lastY === null) return;
+    acc += (lastY - e.clientY) / scale; lastY = e.clientY;
+    while (acc >= pxPerStep) { acc -= pxPerStep; send(id, 1); onStep(1); }
+    while (acc <= -pxPerStep) { acc += pxPerStep; send(id, 0); onStep(-1); } });
+  const end = () => { lastY = null; }; elm.addEventListener('pointerup', end); elm.addEventListener('pointercancel', end);
+  elm.addEventListener('wheel', e => { e.preventDefault(); const up = e.deltaY < 0; send(id, up ? 1 : 0); onStep(up ? 1 : -1); }, {passive: false});
+}
+// Wheel lights: the engine sends each wheel's level (0 = dark ... 9 = all lit) on its own LED register.
+const WHEEL_LIGHT = {0x41:0x40, 0x42:0x47, 0x43:0x41, 0x44:0x48,   // Shaper 1 A D S R
+                     0x47:0x42, 0x49:0x49, 0x4A:0x43, 0x4B:0x4A,   // Shaper 2
+                     0x3B:0x45, 0x3C:0x4C, 0x3D:0x46, 0x3E:0x4D,   // Shaper 3
+                     0x45:0x44, 0x4C:0x4B};                          // Blender, Ctrl 2
+const wheelEls = [];   // [cells, reg]
+function wheel(parent, x, y, id, label, big) {
+  const c = at(parent, x, y); const w = el('div', 'wheel' + (big ? ' big' : ''), c); const r = el('div', 'ridges', w);
+  if (WHEEL_LIGHT[id] !== undefined) {
+    const shade = el('div', 'shade', w); const cells = [];
+    for (let i = 0; i < 9; i++) cells.push(el('div', 'cell', shade));
+    wheelEls.push([cells, WHEEL_LIGHT[id]]);
+  }
+  let off = 0; endless(w, id, 6, d => { off = (off + d * 3 + 10) % 10; r.style.transform = `translateY(${-off}px)`; });
+  if (label) el('div', 'lab', c).textContent = label; return w;
+}
+function knob(parent, x, y, id, label, big) {
+  const c = at(parent, x, y); const k = el('div', 'knob' + (big ? ' big' : ''), c); const m = el('div', 'mark', k);
+  let ang = 0; endless(k, id, 6, d => { ang += d * 12; m.style.transform = `rotate(${ang}deg)`; });
+  if (label) el('div', 'lab', c).textContent = label; return k;
+}
+// menu joystick by the main display: ID 0x52, one bit per direction, then 0 on release.
+// Push puts the selected value back to its default (that is what the original software does).
+const JOY = {up: 8, down: 1, left: 0x10, right: 2, push: 4};
+function joy(v) { send(0x52, v); setTimeout(() => send(0x52, 0), 50); }
+function joystick(parent, x, y) {
+  const c = at(parent, x, y); const g = el('div', 'joy', c);
+  [['up','▲',1,0],['left','◀',0,1],['push','●',1,1],['right','▶',2,1],['down','▼',1,2]].forEach(([k, t, cx, cy]) => {
+    const b = el('div', 'btn' + (k === 'push' ? ' red' : ''), g, {position: 'absolute', left: (cx * 46) + 'px', top: (cy * 30) + 'px', width: '40px'});
+    b.textContent = t; Object.assign(b.style, {display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', color:'#ccc'});
+    b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.add('down'); send(0x52, JOY[k]); });
+    const up = () => { if (b.classList.contains('down')) { b.classList.remove('down'); send(0x52, 0); } };
+    b.addEventListener('pointerup', up); b.addEventListener('pointerleave', up); b.addEventListener('pointercancel', up); });
+  Object.assign(g.style, {position: 'relative', width: '132px', height: '84px'});
+  el('div', 'lab', c, {position: 'absolute', left: '50px', top: '90px'}).textContent = 'Menu';
+}
+// absolute pot (the delay time and mix): drag up/down or scroll, sends 0..127
+function pot(parent, x, y, id, label) {
+  const c = at(parent, x, y); const k = el('div', 'knob', c); const m = el('div', 'mark', k);
+  let v = 0, lastY = null; const show = () => { m.style.transform = `rotate(${-135 + v * 270 / 127}deg)`; send(id, v); };
+  const set = n => { n = Math.max(0, Math.min(127, Math.round(n))); if (n !== v) { v = n; show(); } };
+  m.style.transform = 'rotate(-135deg)';
+  k.addEventListener('pointerdown', e => { e.preventDefault(); k.setPointerCapture(e.pointerId); lastY = e.clientY; });
+  k.addEventListener('pointermove', e => { if (lastY === null) return; set(v + (lastY - e.clientY) / scale / 1.5); lastY = e.clientY; });
+  const end = () => { lastY = null; }; k.addEventListener('pointerup', end); k.addEventListener('pointercancel', end);
+  k.addEventListener('wheel', e => { e.preventDefault(); set(v + (e.deltaY < 0 ? 4 : -4)); }, {passive: false});
+  if (label) el('div', 'lab', c).textContent = label; return k;
+}
+const dispEls = [];  // [element, firstReg, length]
+function disp(parent, x, y, reg, len = 11) { const d = el('div', 'disp', parent, {left: x+'px', top: y+'px'});
+  dispEls.push([d, reg, len]); return d; }
+// X/Y stick: sends absolute positions on two axes, scaled to the stick's calibration range
+function stick(parent, x, y, size, axX, axY, cal, opts = {}) {
+  const s = el('div', 'stick' + (opts.ctrl ? ' ctrl' : ''), parent, {left: x+'px', top: y+'px', width: size+'px', height: size+'px'});
+  const cap = el('div', 'knobcap', s); let fx = .5, fy = .5, lastSent = 0, pend = false;
+  const place = () => { cap.style.left = (fx * size) + 'px'; cap.style.top = (fy * size) + 'px'; }; place();
+  const range = (axis, f) => { const mn = G[cal + axis + 'Min'] ?? 50, mx = G[cal + axis + 'Max'] ?? 200;
+    return Math.max(0, Math.min(249, Math.round(mn + f * (mx - mn)))); };
+  const sendPos = () => { send(axX, range('X', fx)); send(axY, range('Y', 1 - fy)); lastSent = performance.now(); pend = false; };
+  const move = e => { const r = s.getBoundingClientRect();
+    fx = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); fy = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)); place();
+    if (performance.now() - lastSent > 25) sendPos(); else if (!pend) { pend = true; setTimeout(sendPos, 25); } };
+  let down = false;
+  s.addEventListener('pointerdown', e => { e.preventDefault(); s.setPointerCapture(e.pointerId); down = true; move(e); });
+  s.addEventListener('pointermove', e => { if (down) move(e); });
+  const up = () => { down = false; if (opts.spring) { fx = .5; fy = .5; place(); sendPos(); } };
+  s.addEventListener('pointerup', up); s.addEventListener('pointercancel', up);
+  s.addEventListener('dblclick', () => { fx = .5; fy = .5; place(); sendPos(); });
+  return s;
+}
+
+// ------------------------------------------------------------------ panel layout (after the Neuron's top panel)
+function resynator(n, x) {
+  const R = n === 1
+    ? {sw:0x28, swL:[0x06], lvl:0x29, lvlL:[0x03,0x04,0x05], load:0x2A, pitch:0x2B, pitchL:[0x01,0x02], type:0x2C, typeL:[0x0C,0x0D,0x0E],
+       psel:0x36, pselL:[0x0B], pval:0x37, pvalL:[0x0A], vol:0x4D, d:[0x9A, 0xB0, 0xA5, 0xBB], ax:['T','X'], cal:'StickR1'}
+    : {sw:0x2F, swL:[0x16], lvl:0x30, lvlL:[0x13,0x14,0x15], load:0x31, pitch:0x32, pitchL:[0x1E,0x1F], type:0x33, typeL:[0x1A,0x1B],
+       psel:0x38, pselL:[0x12], pval:0x39, pvalL:[0x10], vol:0x4E, d:[0xC6, 0xDC, 0xD1, 0xE7], ax:['U','Y'], cal:'StickR2'};
+  const s = sect('Resynator ' + n, x, 14, 400, 220);
+  knob(s, 14, 40, R.vol, 'Volume');
+  button(s, 14, 140, R.sw, 'On/Off', R.swL);
+  disp(s, 84, 34, R.d[0]); disp(s, 284, 34, R.d[1]); disp(s, 84, 178, R.d[2]); disp(s, 284, 178, R.d[3]);
+  stick(s, 200, 70, 100, R.ax[0].charCodeAt(0), R.ax[1].charCodeAt(0), R.cal);
+  button(s, 84, 70, R.lvl, 'Level', R.lvlL);
+  button(s, 84, 126, R.type, 'Type', R.typeL);
+  button(s, 140, 70, R.psel, 'Param', R.pselL);
+  button(s, 140, 126, R.pval, 'Value', R.pvalL);
+  button(s, 314, 70, R.pitch, 'Pitch', R.pitchL);
+  button(s, 314, 126, R.load, 'Load', [], {red: true});
+}
+function build() {
+  resynator(1, 14);
+  { const s = sect('Blender', 422, 14, 92, 220);
+    wheel(s, 24, 34, 0x45, 'Amount'); button(s, 24, 168, 0x2D, 'Type'); }
+  resynator(2, 522);
+  { const s = sect('Slicer', 930, 14, 96, 220);
+    button(s, 26, 30, 0x34, 'Type', [0x19]); knob(s, 26, 86, 0x4F, 'Depth/Spr'); knob(s, 26, 150, 0x50, 'Rate'); }
+  { const s = sect('Programmer', 1034, 14, 210, 220);
+    const kp = at(s, 14, 30); const g = el('div', 'kp', kp);
+    const keys = [['7',0x00],['8',0x01],['9',0x02],['4',0x03],['5',0x04],['6',0x05],['1',0x06],['2',0x07],['3',0x08],['±',0x09],['0',0x0A],['▶',0x0B]];
+    for (const [t, id] of keys) { const b = el('div', 'btn', g); b.textContent = t;
+      b.addEventListener('pointerdown', e => { e.preventDefault(); send(id, 1); b.classList.add('down'); });
+      const up = () => { if (b.classList.contains('down')) { b.classList.remove('down'); send(id, 0); } };
+      b.addEventListener('pointerup', up); b.addEventListener('pointerleave', up); }
+    button(s, 150, 30, 0x0C, "10's Hold", [0x27]); button(s, 150, 82, 0x0D, 'Save', [0x26], {red: true});
+    button(s, 150, 134, 0x35, 'Snapshot', [0x20]); }
+  { const s = sect('Silver', 1252, 14, 236, 220);
+    disp(s, 12, 30, 0x6E); disp(s, 124, 30, 0x84); disp(s, 12, 180, 0x79); disp(s, 124, 180, 0x8F);
+    stick(s, 78, 66, 100, 'S'.charCodeAt(0), 'W'.charCodeAt(0), 'StickSilver');
+    button(s, 14, 70, 0x13, 'On/Off', [0x21]); button(s, 14, 122, 0x14, 'Level', [0x2B, 0x2D, 0x2E]);
+    button(s, 184, 70, 0x1A, 'Cutoff', [0x2A]); button(s, 184, 122, 0x3A, 'Contour', [0x2C]);  }
+  { const s = sect('Effects', 1496, 14, 92, 220);
+    button(s, 24, 26, 0x18, 'Freq FX', [0x35]); button(s, 24, 74, 0x19, 'Time FX', [0x34]);
+    button(s, 24, 122, 0x1C, 'Delay', [0x32]); button(s, 24, 170, 0x1E, 'Reverb', [0x31]); }
+  // second row
+  { const s = sect('Shaper 1', 14, 246, 290, 170);
+    const ids = [0x41, 0x42, 0x43, 0x44], n = ['Attack', 'Decay', 'Sustain', 'Release'];
+    ids.forEach((id, i) => wheel(s, 16 + i * 52, 34, id, n[i]));
+    button(s, 226, 34, 0x2E, 'Mode', [0x08, 0x09]); }
+  { const s = sect('LFO', 312, 246, 90, 170);
+    button(s, 24, 34, 0x27, 'On/Off', [0x07]); knob(s, 24, 90, 0x46, 'Depth'); }
+  { const s = sect('Shaper 2', 410, 246, 230, 170);
+    const ids = [0x47, 0x49, 0x4A, 0x4B], n = ['Attack', 'Decay', 'Sustain', 'Release'];
+    ids.forEach((id, i) => wheel(s, 16 + i * 52, 34, id, n[i])); }
+  { const s = sect('', 648, 246, 470, 260);   // main display
+    const l = el('div', 'lcd', s, {left: '24px', top: '18px', width: '290px'}); l.id = 'lcd';
+    joystick(s, 326, 14);
+    const row = [[0x0F,'Snd 1',[0x25]],[0x10,'Snd 2',[0x24]],[0x11,'Snd 3',[0x23]],[0x12,'Snd 4',[0x22]],[0x16,'Surround',[0x29]],[0x20,'SetUp',[0x3F]]];
+    row.forEach(([id, t, L], i) => button(s, 24 + i * 58, 108, id, t, L));
+    const row2 = [[0x21,'Bend',[0x3E]],[0x22,'Copy',[0x3D]],[0x23,'FTP',[0x3C]],[0x24,'Settings',[0x3B]]];
+    row2.forEach(([id, t, L], i) => button(s, 24 + i * 58, 172, id, t, L));
+    // Sound (0x25) opens the sound page. Sent as a short tap: held for 2 s the original software does a full reset.
+    button(s, 256, 172, 0x25, 'Sound', [0x3A], {tap: true}); button(s, 256, 224, 0x0B, 'Next Snd', []);
+    // data knob (0x40): changes the selected value; on the sound page it steps through the sounds
+    knob(s, 330, 166, 0x40, 'Data', true); knob(s, 410, 178, 0x48, 'Master Vol'); }
+  { const s = sect('Shaper 3', 1126, 246, 462, 170);
+    const ids = [0x3B, 0x3C, 0x3D, 0x3E], n = ['Att · Dly', 'Dec · Rev', 'Sustain', 'Release'];
+    ids.forEach((id, i) => wheel(s, 20 + i * 76, 30, id, n[i], true));
+    button(s, 330, 34, 0x26, 'Mode', [0x38, 0x39]); knob(s, 396, 30, 0x3F, 'Depth'); }
+  { const s = sect('Silver Filter', 1126, 424, 150, 110);
+    button(s, 20, 40, 0x15, '24 dB LP', [0x36]); button(s, 86, 40, 0x17, '12 dB LP', [0x37]); }
+  { const s = sect('Master Delay', 1284, 424, 150, 110);
+    pot(s, 20, 34, 0x1D, 'Time'); pot(s, 86, 34, 0x1F, 'Mix'); }
+  { const s = sect('Control', 14, 514, 220, 230);   // performance controls, left of the keys
+    stick(s, 16, 40, 110, 'V'.charCodeAt(0), 'Z'.charCodeAt(0), 'StickCntrl', {ctrl: true, spring: true});
+    el('div', 'lab', s, {position: 'absolute', left: '30px', top: '156px'}).textContent = 'Stick (bend)';
+    wheel(s, 150, 40, 0x4C, 'Ctrl 2'); knob(s, 150, 160, 0x51, 'Ctrl 3');
+    }
+  { const s = sect('Play', 14, 752, 220, 190);
+    const c = at(s, 12, 30); el('div', 'lab', c).textContent = 'Velocity';
+    const seg = el('div', 'seg', c); ['soft', 'medium', 'hard'].forEach((t, i) => { const b = el('div', 'btn', seg); b.textContent = t;
+      b.onclick = () => setVel(i); velBtns.push(b); });
+    const c2 = at(s, 12, 90); el('div', 'lab', c2).textContent = 'Octave (computer keys)';
+    const seg2 = el('div', 'seg', c2); const dn = el('div', 'btn', seg2); dn.textContent = '−'; const oc = el('div', 'lab', seg2); oc.id = 'oct';
+    const upb = el('div', 'btn', seg2); upb.textContent = '+'; dn.onclick = () => setOct(octave - 1); upb.onclick = () => setOct(octave + 1);
+    const c3 = at(s, 12, 140); const ao = el('div', 'btn', c3); ao.textContent = 'All notes off';
+    Object.assign(ao.style, {width:'auto', padding:'0 8px', display:'flex', alignItems:'center', fontSize:'11px'}); ao.onclick = allOff;
+    if (!['localhost', '127.0.0.1', '::1'].includes(location.hostname)) {          // tablets etc.: play the sound here too
+      c3.style.flexDirection = 'row'; soundBtn = el('div', 'btn', c3); soundBtn.onclick = soundToggle; showSound();
+      Object.assign(soundBtn.style, {width:'auto', padding:'0 8px', display:'flex', alignItems:'center', fontSize:'11px', minWidth:'96px', justifyContent:'center'}); } }
+  buildKeys(); el('div', '', stage).id = 'status'; setStatus('connecting…');
+}
+
+// ------------------------------------------------------------------ keybed
+const FIRST = 36, LAST = 96;          // five octaves on screen, C2..C7 (the Neuron's keybed runs from C2)
+const VEL = [60, 30, 12]; let vel = 1, octave = 0; const velBtns = [];
+const keyEls = {}; const sounding = new Map();   // source -> note
+function noteOn(src, n) { if (n < 36 || n > 123 || sounding.has(src)) return; sounding.set(src, n); send(n + 0x37, VEL[vel]); keyEls[n]?.classList.add('on'); }
+function noteOff(src) { const n = sounding.get(src); if (n === undefined) return; sounding.delete(src); send(n + 0x37, 0);
+  if (![...sounding.values()].includes(n)) keyEls[n]?.classList.remove('on'); }
+function allOff() { for (const src of [...sounding.keys()]) noteOff(src); }
+function setVel(i) { vel = Math.max(0, Math.min(2, i)); velBtns.forEach((b, j) => b.classList.toggle('sel', j === vel)); }
+function setOct(o) { allOff(); octave = Math.max(-1, Math.min(4, o)); const e = document.getElementById('oct'); if (e) e.textContent = ' C' + (3 + octave) + ' '; }
+function buildKeys() {
+  const kb = el('div', '', stage); kb.id = 'keys';
+  const whites = []; for (let n = FIRST; n <= LAST; n++) if (![1,3,6,8,10].includes(n % 12)) whites.push(n);
+  const ww = 1330 / whites.length;
+  whites.forEach((n, i) => { const k = el('div', 'wk', kb, {left: (i * ww) + 'px', width: ww + 'px'}); k.dataset.n = n; keyEls[n] = k; });
+  for (let n = FIRST; n <= LAST; n++) if ([1,3,6,8,10].includes(n % 12)) {
+    const i = whites.indexOf(n - 1); const k = el('div', 'bk', kb, {left: ((i + 1) * ww - ww * 0.3) + 'px', width: (ww * 0.6) + 'px'});
+    k.dataset.n = n; keyEls[n] = k; }
+  const keyAt = e => { const t = document.elementFromPoint(e.clientX, e.clientY); return t && t.dataset.n ? +t.dataset.n : null; };
+  kb.addEventListener('pointerdown', e => { e.preventDefault(); kb.setPointerCapture(e.pointerId); const n = keyAt(e); if (n !== null) noteOn('p' + e.pointerId, n); });
+  kb.addEventListener('pointermove', e => { if (!sounding.has('p' + e.pointerId)) return; const n = keyAt(e);
+    if (n !== null && n !== sounding.get('p' + e.pointerId)) { noteOff('p' + e.pointerId); noteOn('p' + e.pointerId, n); } });
+  const up = e => noteOff('p' + e.pointerId); kb.addEventListener('pointerup', up); kb.addEventListener('pointercancel', up);
+}
+// computer keyboard: two piano rows, tracker style
+const LOWER = ['KeyZ','KeyS','KeyX','KeyD','KeyC','KeyV','KeyG','KeyB','KeyH','KeyN','KeyJ','KeyM','Comma','KeyL','Period','Semicolon','Slash'];
+const UPPER = ['KeyQ','Digit2','KeyW','Digit3','KeyE','KeyR','Digit5','KeyT','Digit6','KeyY','Digit7','KeyU','KeyI','Digit9','KeyO','Digit0','KeyP'];
+const KMAP = {}; LOWER.forEach((c, i) => KMAP[c] = i); UPPER.forEach((c, i) => KMAP[c] = 12 + i);
+window.addEventListener('keydown', e => {
+  if (e.repeat) { e.preventDefault(); return; }
+  if (e.code in KMAP) { e.preventDefault(); noteOn('k' + e.code, 48 + 12 * octave + KMAP[e.code]); return; }
+  const tap = id => { send(id, 1); setTimeout(() => send(id, 0), 40); };
+  switch (e.code) {
+    case 'Minus': setOct(octave - 1); break; case 'Equal': setOct(octave + 1); break;
+    case 'F5': setVel(vel - 1); break; case 'F6': setVel(vel + 1); break;
+    case 'PageDown': send(0x40, 0); break; case 'PageUp': send(0x40, 1); break;
+    case 'Home': tap(0x25); break; case 'End': tap(0x0B); break; case 'Space': allOff(); break;
+    case 'ArrowUp': joy(JOY.up); break; case 'ArrowDown': joy(JOY.down); break;
+    case 'ArrowLeft': joy(JOY.left); break; case 'ArrowRight': joy(JOY.right); break;
+    case 'Enter': case 'NumpadEnter': joy(JOY.push); break;
+    case 'BracketLeft': send(0x48, 0); break; case 'BracketRight': send(0x48, 1); break;
+    default: { const m = /^Numpad(\d)$/.exec(e.code); if (m) tap([0x0A,0x06,0x07,0x08,0x03,0x04,0x05,0x00,0x01,0x02][+m[1]]); else return; }
+  }
+  e.preventDefault();
+});
+window.addEventListener('keyup', e => { if (e.code in KMAP) noteOff('k' + e.code); });
+window.addEventListener('blur', allOff);
+
+// ------------------------------------------------------------------ rendering
+function chars(a, n) { let s = ''; for (let i = 0; i < n; i++) { const c = regs[a + i]; s += (c >= 32 && c < 127) ? String.fromCharCode(c) : ' '; } return s; }
+function lcdLine(a) {
+  let h = '';
+  for (let i = 0; i < 16; i++) { const c = regs[a + i];
+    if (c >= 0xB0 && c <= 0xB9) h += '<span class="hl">' + (c - 0xB0) + '</span>';   // highlighted digit
+    else if (c >= 32 && c < 127) h += String.fromCharCode(c).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    else h += ' '; }
+  return h;
+}
+function renderAll() {
+  const l = document.getElementById('lcd'); if (l) l.innerHTML = lcdLine(0x4E) + '\n' + lcdLine(0x5E);
+  for (const [d, r, n] of dispEls) d.textContent = chars(r, n);
+  for (const [e, r] of ledEls) { const v = regs[r]; e.classList.toggle('on', v === 1); e.classList.toggle('blink', v === 2); }
+  for (const [cells, r] of wheelEls) { const n = regs[r] | 0; cells.forEach((c, i) => c.classList.toggle('lit', i < n)); }
+}
+
+// ------------------------------------------------------------------ sound on this device (iPad, another PC)
+// The relay streams what the host plays (s16 stereo 44.1 kHz, 20 ms chunks) on /audio; we schedule each chunk
+// ~60 ms ahead. iPad Safari only starts sound from a tap, so this is a button.
+const SILENT_WAV = 'data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+let actx = null, aws = null, nextT = 0, soundOn = false, soundBtn = null, silentEl = null;
+const LEAD = 0.06, MAXLEAD = 0.25;
+function showSound() { if (!soundBtn) return;
+  soundBtn.textContent = soundOn ? (aws && aws.readyState === 1 ? 'Sound here: ON' : 'Sound here: connecting…') : 'Sound here: off';
+  soundBtn.classList.toggle('sel', soundOn); }
+function soundToggle() { soundOn ? soundStop() : soundStart(); }
+function soundStart() {
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  if (!actx) { try { actx = new AC({sampleRate: 44100}); } catch (e) { actx = new AC(); } }
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}   // play even with the iPad muted
+  if (!silentEl) { silentEl = new Audio(SILENT_WAV); silentEl.loop = true; }
+  silentEl.play().catch(() => {});
+  actx.resume();
+  const b = actx.createBufferSource(); b.buffer = actx.createBuffer(1, 1, 44100); b.connect(actx.destination); b.start(0);  // unlock
+  soundOn = true; nextT = 0; if (!aws) openAudio(); showSound();
+}
+function soundStop() { soundOn = false; if (aws) aws.close(); if (silentEl) silentEl.pause(); if (actx) actx.suspend(); showSound(); }
+function openAudio() {
+  aws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/audio');
+  aws.binaryType = 'arraybuffer';
+  aws.onopen = showSound;
+  aws.onmessage = ev => playChunk(ev.data);
+  aws.onclose = () => { aws = null; showSound(); if (soundOn) setTimeout(() => { if (soundOn && !aws) openAudio(); }, 1000); };
+}
+function playChunk(buf) {
+  if (!soundOn || !actx || actx.state !== 'running') return;
+  const pcm = new Int16Array(buf), n = pcm.length >> 1; if (!n) return;
+  const ab = actx.createBuffer(2, n, 44100), L = ab.getChannelData(0), R = ab.getChannelData(1);
+  for (let i = 0; i < n; i++) { L[i] = pcm[2 * i] / 32768; R[i] = pcm[2 * i + 1] / 32768; }
+  const now = actx.currentTime;
+  if (nextT < now + 0.005 || nextT > now + MAXLEAD) nextT = now + LEAD;     // underrun or drift: re-anchor
+  const src = actx.createBufferSource(); src.buffer = ab; src.connect(actx.destination); src.start(nextT); nextT += n / 44100;
+}
+// After the iPad sleeps or switches apps, Safari pauses the sound; any touch on the panel wakes it again.
+document.addEventListener('pointerdown', () => { if (soundOn && actx && actx.state !== 'running') { actx.resume(); if (silentEl) silentEl.play().catch(() => {}); } }, true);
+
+// ------------------------------------------------------------------ scaling to the window
+let scale = 1;
+// Layout viewport size (not the zoomed visual viewport), so a pinch/double-tap zoom on a tablet can't throw it off.
+function fit() { const W = document.documentElement.clientWidth || innerWidth, H = document.documentElement.clientHeight || innerHeight;
+  scale = Math.min(W / 1600, H / 980); stage.style.transform = `scale(${scale})`;
+  stage.style.left = Math.max(0, (W - 1600 * scale) / 2) + 'px'; stage.style.top = Math.max(0, (H - 980 * scale) / 2) + 'px'; }
+addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 300));
+// iPad/iPhone Safari ignores user-scalable=no: block pinch zoom, double-tap zoom and page scrolling by hand.
+for (const g of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(g, e => e.preventDefault(), {passive: false});
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => { const now = Date.now(); if (now - lastTouchEnd < 350) e.preventDefault(); lastTouchEnd = now; }, {passive: false});
+document.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
+build(); setVel(1); setOct(0); fit(); connect();
+</script>
+</body>
+</html>

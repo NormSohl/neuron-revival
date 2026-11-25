@@ -1,0 +1,20 @@
+# never commit original software, images or derived binaries
+*.tib
+*.img
+*.raw
+*.rar
+*.iso
+*.dll
+*.exe
+*.jnilib
+*.so
+*.so.2
+*.sit
+*.scape
+*.sphere
+chroot/
+out/
+neuron
+neuron96*
+__pycache__/
+.DS_Store

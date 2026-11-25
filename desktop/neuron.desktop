@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Neuron
+Comment=Hartmann Neuron: original engine with the on-screen panel
+Exec=@HOME@/neuron/desktop/neuron-desktop.sh
+Icon=audio-x-generic
+Terminal=false
+Categories=AudioVideo;Audio;
+Actions=stop;
+
+[Desktop Action stop]
+Name=Stop the Neuron
+Exec=@HOME@/neuron/desktop/neuron-desktop.sh stop

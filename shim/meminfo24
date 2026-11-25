@@ -1,0 +1,5 @@
+        total:    used:    free:  shared: buffers:  cached:
+Mem:  536870912 104857600 432013312        0  4194304 52428800
+Swap: 526417920        0 526417920
+MemTotal:       524288 kB
+MemFree:        421888 kB

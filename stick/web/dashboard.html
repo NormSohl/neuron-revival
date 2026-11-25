@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neuron</title>
+<style>
+  :root { --bg:#111416; --card:#1b2024; --line:#2c3338; --text:#e6e9eb; --dim:#8b959c;
+          --green:#5fd37a; --amber:#f0b429; --red:#ef4f4f; --lcd:#0d1c10; --lcdtext:#7ee08f; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--text);
+               font:16px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:560px; margin:0 auto; padding:20px 16px 32px; }
+  header { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:16px; }
+  h1 { font-size:22px; margin:0; letter-spacing:.02em; }
+  #status { color:var(--dim); font-size:14px; }
+  #status.ok::before { content:"● "; color:var(--green); }
+  #status.bad::before { content:"● "; color:var(--red); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; }
+  .lcd { background:var(--lcd); color:var(--lcdtext); border-radius:8px; padding:10px 12px;
+         font:18px/1.35 ui-monospace, "SF Mono", Menlo, Consolas, monospace; white-space:pre; overflow:hidden; }
+  .label { color:var(--dim); font-size:13px; text-transform:uppercase; letter-spacing:.08em; margin:0 0 10px; }
+  .meter { display:grid; grid-template-columns:18px 1fr 56px; align-items:center; gap:10px; margin:10px 0; }
+  .meter b { font-weight:600; color:var(--dim); }
+  .bar { position:relative; height:22px; border-radius:5px; background:#0b0e10; overflow:hidden; }
+  .fill { position:absolute; inset:0 auto 0 0; width:0;
+          background:linear-gradient(90deg, var(--green) 0 70%, var(--amber) 70% 90%, var(--red) 90%);
+          background-size:var(--full, 100%) 100%; }
+  .peak { position:absolute; top:0; bottom:0; width:2px; background:#fff; left:0; opacity:.85; }
+  .db { text-align:right; font-variant-numeric:tabular-nums; color:var(--dim); font-size:14px; }
+  .db.clip { color:var(--red); font-weight:700; }
+  .scale { display:grid; grid-template-columns:18px 1fr 56px; gap:10px; color:var(--dim); font-size:11px; }
+  .ticks { position:relative; height:14px; }
+  .ticks span { position:absolute; transform:translateX(-50%); }
+  .vol { display:flex; align-items:center; gap:14px; }
+  input[type=range] { flex:1; accent-color:var(--green); height:32px; }
+  #volval { min-width:3ch; text-align:right; font-size:28px; font-variant-numeric:tabular-nums; }
+  .note { color:var(--dim); font-size:13px; margin:10px 0 0; }
+  select, button { font:inherit; color:var(--text); background:#0b0e10; border:1px solid var(--line);
+                   border-radius:8px; padding:8px 10px; }
+  .audio { display:flex; gap:10px; }
+  .audio select { flex:1; min-width:0; }
+  button { background:var(--green); color:#0d1c10; border:none; font-weight:600; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:default; }
+  footer { color:var(--dim); font-size:13px; text-align:center; }
+  footer a { color:var(--dim); }
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Neuron</h1><span id="status">connecting…</span></header>
+
+  <section class="card"><div class="lcd" id="lcd"> &#10; </div></section>
+
+  <section class="card">
+    <p class="label">Output</p>
+    <div class="meter"><b>L</b><div class="bar"><div class="fill" id="fillL"></div><div class="peak" id="peakL"></div></div><span class="db" id="dbL">–∞</span></div>
+    <div class="meter"><b>R</b><div class="bar"><div class="fill" id="fillR"></div><div class="peak" id="peakR"></div></div><span class="db" id="dbR">–∞</span></div>
+    <div class="scale"><span></span><div class="ticks" id="ticks"></div><span></span></div>
+    <p class="note" id="mnote">Bar: average level. White line: recent peak. dB below full scale.</p>
+  </section>
+
+  <section class="card">
+    <p class="label">Master volume</p>
+    <div class="vol"><input type="range" id="vol" min="0" max="127" step="1" value="64" aria-label="Master volume"><span id="volval">–</span></div>
+    <p class="note" id="volnote">Same as the panel's Master Vol knob.</p>
+  </section>
+
+  <section class="card" id="audiocard" hidden>
+    <p class="label">Audio output</p>
+    <div class="audio"><select id="audiosel" aria-label="Audio output"></select><button id="audiogo" disabled>Switch</button></div>
+    <p class="note" id="audionote"></p>
+  </section>
+
+  <footer><a href="/panel">On-screen panel</a></footer>
+</main>
+<script>
+const MIN_DB = -60;
+const pct = db => Math.max(0, Math.min(100, (db - MIN_DB) / -MIN_DB * 100));
+const toDb = x => x > 0 ? 20 * Math.log10(x) : -Infinity;
+const ticks = document.getElementById('ticks');
+for (const db of [-60, -48, -36, -24, -12, -6, 0]) {
+  const s = document.createElement('span'); s.style.left = pct(db) + '%'; s.textContent = db; ticks.appendChild(s);
+}
+
+// ---- panel link: LCD text and Master Volume (panel ID 0x48: value 1 = one step up, 0 = one step down)
+const regs = new Array(256).fill(32);
+let ws, est = null, dragging = false;
+const vol = document.getElementById('vol'), volval = document.getElementById('volval');
+function lcdText(a) { let s = ''; for (let i = a; i < a + 16; i++) { let c = regs[i];
+  if (c >= 0xB0 && c <= 0xB9) c -= 0x80; s += (c >= 32 && c < 127) ? String.fromCharCode(c) : ' '; } return s; }
+function showVol(v) { est = v; volval.textContent = v; if (!dragging) vol.value = v;
+  document.getElementById('volnote').textContent = "Same as the panel's Master Vol knob."; }
+function renderLcd() {
+  const l0 = lcdText(0x4E), l1 = lcdText(0x5E);
+  document.getElementById('lcd').textContent = l0 + '\n' + l1;
+  const m = (l0 + ' ' + l1).match(/vol(?:ume)?\s*:?\s*(\d{1,3})/i);   // the Neuron shows the value while it changes
+  if (m && +m[1] <= 127) showVol(+m[1]);
+}
+function connect() {
+  ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+  ws.onopen = () => setStatus(true);
+  ws.onclose = () => { setStatus(false); setTimeout(connect, 1500); };
+  ws.onmessage = ev => { const d = JSON.parse(ev.data);
+    if (d.all) { d.all.forEach((v, i) => regs[i] = v);
+      if (Number.isInteger(d.vol)) showVol(d.vol);                       // last value the Neuron showed
+      else if (d.globals && Number.isInteger(d.globals.MasterVolume) && est === null) showVol(d.globals.MasterVolume); }
+    if (d.r) for (const [r, v] of d.r) regs[r] = v;
+    renderLcd(); };
+}
+function setStatus(ok) { const s = document.getElementById('status');
+  s.className = ok ? 'ok' : 'bad'; s.textContent = ok ? 'connected' : 'reconnecting…'; }
+function sendSteps(target) {
+  if (est === null) { document.getElementById('volnote').textContent =
+    'Current volume unknown: turn the Master Vol knob one click to sync.'; return; }
+  if (!ws || ws.readyState !== 1) return;
+  const n = target - est; if (!n) return;
+  const m = []; for (let i = 0; i < Math.abs(n); i++) m.push([0x48, n > 0 ? 1 : 0]);
+  ws.send(JSON.stringify({m})); showVol(target);
+}
+vol.addEventListener('input', () => { dragging = true; volval.textContent = vol.value; sendSteps(+vol.value); });
+vol.addEventListener('change', () => { dragging = false; sendSteps(+vol.value); });
+connect();
+
+// ---- output meters: shim levels via /ws/levels, smoothed here (fast rise, ~300 ms fall)
+const M = { L: {db: -Infinity, shown: MIN_DB, peak: MIN_DB, hold: 0}, R: {db: -Infinity, shown: MIN_DB, peak: MIN_DB, hold: 0} };
+let live = false;
+function meters() {
+  const lw = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/levels');
+  lw.onmessage = ev => { const d = JSON.parse(ev.data); live = !!d.lv;
+    document.getElementById('mnote').textContent = live ? 'Bar: average level. White line: recent peak. dB below full scale.'
+                                                        : 'No sound data from the engine yet.';
+    if (!d.lv) { M.L.db = M.R.db = -Infinity; return; }
+    const [pl, pr, ml, mr] = d.lv; const now = performance.now();
+    for (const [k, p, ms] of [['L', pl, ml], ['R', pr, mr]]) {
+      M[k].db = toDb(Math.sqrt(ms)); const pdb = toDb(p);
+      if (pdb >= M[k].peak || now > M[k].hold) { M[k].peak = Math.max(pdb, MIN_DB); M[k].hold = now + 1200; }
+      M[k].clip = p >= 0.999; } };
+  lw.onclose = () => setTimeout(meters, 1500);
+}
+let lastT = performance.now();
+function frame(t) {
+  const dt = (t - lastT) / 1000; lastT = t;
+  for (const k of ['L', 'R']) {
+    const m = M[k], target = Math.max(m.db, MIN_DB);
+    m.shown = target > m.shown ? target : Math.max(target, m.shown - 20 * dt * 3.3);    // ~20 dB per 300 ms fall
+    if (performance.now() > m.hold) m.peak = Math.max(MIN_DB, m.peak - 20 * dt);
+    const w = pct(m.shown);
+    const f = document.getElementById('fill' + k);
+    f.style.width = w + '%'; f.style.setProperty('--full', (w > 0 ? 10000 / w : 100) + '%');
+    document.getElementById('peak' + k).style.left = 'calc(' + pct(m.peak) + '% - 1px)';
+    const e = document.getElementById('db' + k);
+    e.textContent = m.peak > MIN_DB ? m.peak.toFixed(1) : '–∞'; e.className = 'db' + (m.clip ? ' clip' : '');
+  }
+  requestAnimationFrame(frame);
+}
+meters(); requestAnimationFrame(frame);
+
+// ---- audio output picker: USB audio devices that can play; switching restarts the engine (a moment of silence)
+const asel = document.getElementById('audiosel'), ago = document.getElementById('audiogo'), anote = document.getElementById('audionote');
+let audio = null;
+async function loadAudio() {
+  try { audio = await (await fetch('/api/audio')).json(); } catch (e) { return; }
+  if (!audio.can_set) return;                                   // only on the installed setup
+  document.getElementById('audiocard').hidden = false;
+  const first = audio.cards[0];
+  asel.innerHTML = '';
+  const add = (v, txt) => { const o = document.createElement('option'); o.value = v; o.textContent = txt; asel.appendChild(o); };
+  add('auto', 'Automatic' + (first ? ' (' + first.name + ')' : ' (none found)'));
+  for (const c of audio.cards) add(c.dev, c.name);
+  if (audio.setting !== 'auto' && !audio.cards.some(c => c.dev === audio.setting)) add(audio.setting, audio.setting + ' (not connected)');
+  asel.value = audio.setting;
+  const use = audio.cards.find(c => c.dev === audio.in_use);
+  anote.textContent = audio.cards.length ? 'Playing through: ' + (use ? use.name : (audio.in_use || 'nothing')) + '. USB devices only; this one is the Neuron\'s alone.'
+                                         : 'No USB audio interface found. Plug one in, then reload this page.';
+  ago.disabled = true;
+}
+asel.addEventListener('change', () => { ago.disabled = !audio || asel.value === audio.setting; });
+ago.addEventListener('click', async () => {
+  ago.disabled = true; anote.textContent = 'Switching… the sound stops for a few seconds while the Neuron restarts.';
+  try { const r = await (await fetch('/api/audio', {method: 'POST', headers: {'Content-Type': 'application/json'},
+                                                 body: JSON.stringify({dev: asel.value})})).json();
+        if (!r.ok) { anote.textContent = 'Could not switch: ' + (r.msg || 'unknown error'); return; } }
+  catch (e) { anote.textContent = 'Could not switch: no answer from the Neuron.'; return; }
+  loadAudio();
+});
+loadAudio();
+</script>
+</body>
+</html>

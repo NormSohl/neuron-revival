@@ -1,0 +1,16 @@
+# User service: the Neuron without a screen (relay + original engine in safe mode, real panel on
+# /dev/ttyUSB0 when plugged in, web panel on port 8080). Install: desktop/install-user-services.sh
+[Unit]
+Description=Hartmann Neuron (headless: relay + engine, no kiosk page)
+Wants=pipewire.service wireplumber.service
+After=pipewire.service wireplumber.service
+
+[Service]
+Environment=REAL_PANEL=/dev/ttyUSB0
+ExecStart=%h/neuron/desktop/neuron-desktop.sh headless
+ExecStop=%h/neuron/desktop/neuron-desktop.sh stop
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

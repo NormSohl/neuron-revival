@@ -1,0 +1,13 @@
+[Unit]
+Description=Hartmann Neuron engine
+After=local-fs.target systemd-udev-settle.service
+
+[Service]
+ExecStart=/opt/neuron/neuron-start.sh
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+[Unit]
+Description=Neuron web panel full screen on this PC's display
+Conflicts=getty@tty1.service
+After=systemd-user-sessions.service getty@tty1.service neuron-relay.service
+Wants=dbus.socket systemd-logind.service
+StartLimitIntervalSec=0
+
+[Service]
+User=kiosk
+PAMName=cage
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+StandardInput=tty-fail
+StandardOutput=journal
+StandardError=journal
+UtmpIdentifier=tty1
+UtmpMode=user
+Environment=WLR_RENDERER_ALLOW_SOFTWARE=1
+ExecStart=/opt/neuron/kiosk.sh
+Restart=always
+RestartSec=2
